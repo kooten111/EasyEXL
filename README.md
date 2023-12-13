@@ -1,11 +1,11 @@
-# convert_quant_exl2
+# EasyEXL Description
+A Python script designed to streamline the process of quantizing models to exllamav2 format 
+
 Convert FP16 models from .bin to safetensor (if necessary) and then quantize them with exllama2.
 
-Run from exllama2/util directory
-python convert-and-quant.py path/to/model
+# How to use 
+Set the exllamav2 directory and calibration dataset file in settings.json
 
-## Todo
+Then you can just run ``python EasyEXL.py /path/to/model``
 
-Batch Jobs
-
-Error handling, do not remove intermediary files so that jobs can be resumed 
+The quantized model will be in the original models folder.
