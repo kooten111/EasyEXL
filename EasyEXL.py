@@ -49,7 +49,7 @@ def run_quantization(directories, config):
     try:
         subprocess.run(['python', convert_py_script, '-i', directories['fp16_model_dir'], '-o', directories['quant_dir'],
                         '-c', f'./{config["cal_dataset"]}', '-b', config["bits_per_weight"], '-hb', config["head_bits"],
-                        '-gr', config["gpu_rows"], '-l', config["token_length"], '-ml', config["measurement_length"], 
+                        '-l', config["token_length"], '-ml', config["measurement_length"], 
                         '-ra', config["rope_alpha"]] + measurement_arg)
         return True
     except subprocess.CalledProcessError as e:
