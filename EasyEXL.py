@@ -14,6 +14,7 @@ def load_config():
 
 def setup_directories(model_path, config):
     print("Setting up directories...")
+    model_path = model_path.rstrip("/")
     return {
         "fp16_model_dir": os.path.abspath(model_path),
         "exllama_dir": os.path.abspath(config['exllama_dir']),
