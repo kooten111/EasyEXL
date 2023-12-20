@@ -54,11 +54,13 @@ def run_quantization(directories, config):
         return False
 
     try:
-        subprocess.run(['python', convert_py_script, '-i', directories['fp16_model_dir'], '-o', directories['quant_dir'],
-                        '-c', f'./{config["cal_dataset"]}', '-b', config["bits_per_weight"], '-hb', config["head_bits"], '-l', config["token_length"], '-ml', config["measurement_length"], 
-                        '-ra', config["rope_alpha"]] + measurement_arg)
-        print("Quantization successful.")
-        return True
+        result = subprocess.run(['python', convert_py_script, '-i', directories['fp16_model_dir'], '-o', directories['quant_dir'],
+                                 '-c', f'./{config["cal_dataset"]}', '-b', config["bits_per_weight"], '-hb', config["head_bits"],
+                                 '-l', config["token_length"], '-ml', config["measurement_length"], '-ra', config["rope_alpha"]] + measurement_arg, check=True)
+        if result.returncode == 0:
+            print("Quantization successful.")
+            return True
+            
     except subprocess.CalledProcessError as e:
         print("### ERROR in Quantization ###")
         print(e)
