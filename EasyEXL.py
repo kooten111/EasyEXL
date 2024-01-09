@@ -4,6 +4,7 @@ import os
 import subprocess
 import shutil
 import json
+import time
 import argparse
 
 def load_config():
@@ -16,7 +17,7 @@ def setup_directories(model_path, config):
     print("Setting up directories...")
     model_path = model_path.rstrip("/")
     return {
-        "fp16_model_dir": os.path.abspath(model_path),
+        "fp16_model_dir": os.path.abspath(model_path.rstrip("/")),
         "exllama_dir": os.path.abspath(config['exllama_dir']),
         "quant_dir": os.path.join(os.path.abspath(model_path), f"{os.path.basename(model_path)}-{config['bits_per_weight']}bpw-exl2")
     }
@@ -54,13 +55,17 @@ def run_quantization(directories, config):
         return False
 
     try:
+        start_time = time.time()
         result = subprocess.run(['python', convert_py_script, '-i', directories['fp16_model_dir'], '-o', directories['quant_dir'],
                                  '-c', f'./{config["cal_dataset"]}', '-b', config["bits_per_weight"], '-hb', config["head_bits"],
                                  '-l', config["token_length"], '-ml', config["measurement_length"], '-ra', config["rope_alpha"]] + measurement_arg, check=True)
+        end_time = time.time()
+        duration = end_time - start_time
         if result.returncode == 0:
             print("Quantization successful.")
+            print(f"Time taken: {duration // 60} minutes {duration % 60:.2f} seconds")
             return True
-            
+        
     except subprocess.CalledProcessError as e:
         print("### ERROR in Quantization ###")
         print(e)
@@ -92,17 +97,23 @@ def main():
     print("#### STARTING SCRIPT ####")
     parser = argparse.ArgumentParser(description='Convert and Quantize fp16 models to Exllama2.')
     parser.add_argument('model_path', type=str, help='Path to FP16 model directory')
+    parser.add_argument('--bpw', type=str, help='Bits per weight')
     args = parser.parse_args()
 
     config = load_config()
+
+    if args.bpw is not None:
+        config['bits_per_weight'] = args.bpw
+
     directories = setup_directories(args.model_path, config)
     
     run_conversion_scripts(directories, config)
     prepare_quantization_directory(directories)
-
     if run_quantization(directories, config):
         cleanup_and_save(directories)
         print("Finished...")
+
+
 
 if __name__ == "__main__":
     main()
