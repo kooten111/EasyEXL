@@ -6,16 +6,18 @@ import os
 from huggingface_hub import HfApi, create_repo
 
 def run_script(path, bpw_values, upload):
-    folder_name = os.path.basename(os.path.normpath(path))
+    absolute_path = os.path.abspath(path)
+
+    folder_name = os.path.basename(os.path.normpath(absolute_path))
     for bpw in bpw_values:
-        command = ["python", "EasyEXL.py", path, "--bpw", str(bpw)]
+        command = ["python", "EasyEXL.py", absolute_path, "--bpw", str(bpw)]
         subprocess.run(command)
 
     if upload:
-        upload_thread = threading.Thread(target=upload_models, args=(folder_name, bpw_values))
+        upload_thread = threading.Thread(target=upload_models, args=(folder_name, bpw_values, absolute_path))
         upload_thread.start()
 
-def upload_models(folder_name, bpw_values):
+def upload_models(folder_name, bpw_values, base_path):
     with open("settings.json", "r") as file:
         settings = json.load(file)
     userhf = settings.get("userhf", "")
@@ -24,7 +26,7 @@ def upload_models(folder_name, bpw_values):
     for bpw in bpw_values:
         repo_name = f"{userhf}/{folder_name}-{bpw}bpw-exl2".lstrip('/')
         create_repo(repo_name, private=True)
-        model_folder_path = f"{folder_name}/{folder_name}-{bpw}bpw-exl2"
+        model_folder_path = os.path.join(base_path, f"{folder_name}-{bpw}bpw-exl2")
         api.upload_folder(
             folder_path=model_folder_path,
             repo_id=repo_name,
