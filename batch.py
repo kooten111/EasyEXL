@@ -39,11 +39,10 @@ if __name__ == "__main__":
     model_path = sys.argv[1]
     bpw_arg_index = sys.argv.index("--bpw") + 1 if "--bpw" in sys.argv else None
     upload = "--upload" in sys.argv
-
     if bpw_arg_index is None or bpw_arg_index >= len(sys.argv):
         print("Invalid or missing bpw argument")
         sys.exit(1)
 
-    bpw_values = sys.argv[bpw_arg_index].split(',')
+    bpw_values = sys.argv[bpw_arg_index].replace(' ', '').split(',')
 
     run_script(model_path, bpw_values, upload)
