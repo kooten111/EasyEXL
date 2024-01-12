@@ -22,7 +22,7 @@ def upload_models(folder_name, bpw_values):
     api = HfApi()
 
     for bpw in bpw_values:
-        repo_name = f"{userhf}/{folder_name}-{bpw}bpw-exl2"
+        repo_name = f"{userhf}/{folder_name}-{bpw}bpw-exl2".lstrip('/')
         create_repo(repo_name, private=True)
         model_folder_path = f"{folder_name}/{folder_name}-{bpw}bpw-exl2"
         api.upload_folder(
