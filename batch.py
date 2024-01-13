@@ -35,7 +35,7 @@ def upload_models(folder_name, bpw_values, base_path):
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
-        print("Usage: python batch.py /path/to/model/ --bpw 8,6,5,4 [--upload]")
+        print('Usage: python batch.py /path/to/model/ --bpw "8,6,5,4" [--upload]')
         sys.exit(1)
 
     model_path = sys.argv[1]
@@ -45,6 +45,7 @@ if __name__ == "__main__":
         print("Invalid or missing bpw argument")
         sys.exit(1)
 
-    bpw_values = sys.argv[bpw_arg_index].replace(' ', '').split(',')
+    bpw_values = [value.strip() for value in sys.argv[bpw_arg_index].split(',') if value.strip()]
+    print("bpw_values:", bpw_values)
 
     run_script(model_path, bpw_values, upload)
