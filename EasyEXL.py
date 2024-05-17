@@ -57,8 +57,8 @@ def run_quantization(directories, config):
     try:
         start_time = time.time()
         result = subprocess.run(['python', convert_py_script, '-i', directories['fp16_model_dir'], '-o', directories['quant_dir'],
-                                 '-c', f'./{config["cal_dataset"]}', '-b', config["bits_per_weight"], '-hb', config["head_bits"],
-                                 '-l', config["token_length"], '-ml', config["measurement_length"], '-ra', config["rope_alpha"]] + measurement_arg, check=True)
+                                 '-b', config["bits_per_weight"], '-hb', config["head_bits"], '-l', config["token_length"], '-ml', config["measurement_length"],
+                                 '-ra', config["rope_alpha"], '-r', config["dataset_rows"], '-mr', config["measurement_rows"]] + measurement_arg, check=True)
         end_time = time.time()
         duration = end_time - start_time
         if result.returncode == 0:
